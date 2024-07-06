@@ -1,7 +1,9 @@
 import copy
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
-from column import Column
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from column import Column, ColumnTimeSeries
+from typing import Optional
 
 class DataPreprocessing:
     def __init__(self, df, previous):
@@ -12,7 +14,7 @@ class DataPreprocessing:
             self.ohe = previous['ohe']
 
         self.df = copy.deepcopy(df)
-
+    
     # sequence of reprocessing.
     def preprocessing_reguler(self):
         print("original shape", self.df.shape)
@@ -118,3 +120,29 @@ class DataPreprocessing:
         return {
             'ohe': self.ohe
         }
+
+
+
+class PreprocessTimeSeries:
+    def __init__(self, df: pd.DataFrame, prev: StandardScaler):
+        self.series = copy.deepcopy(df)
+        self.array = np.array(self.series).reshape(-1, 1)
+        self.standard_scaler: Optional[StandardScaler] = prev
+
+    def rescale_fit(self):
+        ss = StandardScaler().fit(self.array)
+        self.standard_scaler = ss
+        return self
+
+    def transform(self):
+        self.series = pd.Series(
+            self.standard_scaler.transform(self.array).reshape(-1),
+                index = self.series.index)
+        return self
+
+    def get_scaler(self):
+        return self.standard_scaler
+
+    def get_series(self):
+        return self.series
+

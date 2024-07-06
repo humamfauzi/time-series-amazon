@@ -62,6 +62,7 @@ class Column(Enum):
     ship_postal_code = 19
 
     # country of the shipment destination
+    # currently only exist India
     ship_country = 20
 
     # which promo code customer use in the transaction
@@ -83,8 +84,14 @@ class Column(Enum):
     # month when this transaction happen
     month = 26
 
-    # indicates that the purchase use some promotional code
-    is_promotion = 27
+    # indicate the day, this would increment each passing day
+    # primary indicator for time series 
+    day = 27
+
+    # indicates that the purchase use a promotional code
+    is_promotion = 28
+
+    simplified_sku = 29
 
     @classmethod
     def column_name(cls):
@@ -105,7 +112,7 @@ class Column(Enum):
             cls.amazon_item_id.name,
         ]
 
-    # see EDA section for better explanation
+    # see column definition for better explaination
     @classmethod
     def dropped(cls):
         return [
@@ -159,3 +166,52 @@ class Column(Enum):
             cls.week.name,
             cls.month.name,
         ]
+
+class ColumnTimeSeries(Enum):
+    date = 1
+
+    simplified_sku = 2
+
+    current_quantity = 3
+
+    quantity_scaled = 4
+
+    pq1 = 5
+    
+    pq2 = 6
+
+    pq3 = 7
+
+    pq4 = 8
+
+    pq5 = 9
+
+
+    @classmethod
+    def all(cls):
+        return [col.name for col in cls]
+    
+    @classmethod
+    def numerical(cls):
+        return [
+            cls.current_quantity.name,
+            cls.pq1.name,
+            cls.pq2.name,
+            cls.pq3.name,
+            cls.pq4.name,
+            cls.pq5.name,
+        ]
+
+    @classmethod
+    def train(cls):
+        return [
+            cls.pq1.name,
+            cls.pq2.name,
+            cls.pq3.name,
+            cls.pq4.name,
+            cls.pq5.name,
+        ]
+
+    @classmethod
+    def target(cls):
+        return cls.current_quantity.name

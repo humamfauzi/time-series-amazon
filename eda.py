@@ -1,10 +1,12 @@
 from column import Column
+from typing import List
+import pandas as pd
 import pprint
 class ExplanatoryDataAnalysis:
-    def __init__(self, df):
+    def __init__(self, df: pd.DataFrame):
         # does not need deepcopy because no modification in EDA
         self.df = df
-        self.loan_interest_map = {}
+        self.sku: List[str] = []
 
     def check_na(self):
         # check each column for NaN value
@@ -23,3 +25,17 @@ class ExplanatoryDataAnalysis:
             print(self.df[column].value_counts())
             print("")
         return self
+    
+    def check_sku_date(self):
+        self.df[Column.date.name] = pd.to_datetime(self.df[Column.date.name])
+        unique_date = list(self.df[Column.date.name].sort_values().unique())
+        self.df[Column.simplified_sku.name] = pd.Series([ i.split("-")[0] for i in self.df[Column.stock_keeping_unit.name]], index=self.df.index)
+        all_sku = set(self.df[self.df[Column.date.name] == unique_date[0]][Column.simplified_sku.name].unique())
+        for date in unique_date[1:]:
+            unique_sku = set(self.df[self.df[Column.date.name] == date][Column.simplified_sku.name].unique())
+            all_sku = all_sku.intersection(unique_sku)
+        self.sku = list(all_sku)
+        return self
+    
+    def get_all_desired_sku(self):
+        return self.sku
