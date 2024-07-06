@@ -1,7 +1,7 @@
 from loader import Loader
-from grid import Grid, GridTimeSeries
+from grid import GridTimeSeries
 from model import ModelTimeSeries
-from split_preprocess import SplitPreprocessData, SplitPreprocessTimeSeriesData
+from split_preprocess import SplitPreprocessTimeSeriesData
 from eda import ExplanatoryDataAnalysis
 from column import ColumnTimeSeries
 import numpy as np
@@ -13,50 +13,6 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 
-def main():
-    ld = (Loader()
-        # loading data via disk and store it inside class container
-        .load_via_disk()
-
-        # display basic properties of the data
-        .profile()
-
-        # load the data as a variable
-        .get_df())
-    (ExplanatoryDataAnalysis(ld)
-        .check_na()
-        .categorical_possible_value())
-    split_data = (SplitPreprocessData(ld)
-        # split data into train, valid, and test based on ordering
-        .split_data()
-
-        # preprocess train data
-        .preprocess_train()
-
-        # apply all preprocessing to valid data
-        .apply_preprocess_valid()
-
-        # apply all preprocessing to test data
-        .apply_preprocess_test()
-
-        # split input and target column
-        .input_output_split()
-
-        # get the split data that will be trained
-        .get_split_data())
-
-    (Grid(split_data)
-        # run all potential model
-        .run()
-
-        # show the result of the training
-        .show_result()
-
-        # pick the best model based on validation result
-        .pick_best_result()
-
-        # run the best model on test data and show the result
-        .run_test_data())
 
 def alternative_main():
     ld = (Loader()

@@ -1,5 +1,5 @@
-from column import Column
 from typing import List
+from column import Column
 import pandas as pd
 import pprint
 class ExplanatoryDataAnalysis:
